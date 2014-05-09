@@ -1,0 +1,243 @@
+<html>
+    <meta charset="utf-8"/>
+    <title>Base de Datos</title>
+    <link href="css/jquery.mobile.theme-1.0.min.css" rel="stylesheet" type="text/css"/>
+    <link href="css/jquery.mobile.structure-1.0.min.css" rel="stylesheet" type="text/css"/>
+
+    <script src="phonegap.js"></script>
+    <script src="js/jquery-1.6.4.min.js" type="text/javascript"></script>
+    <script src="js/jquery.mobile-1.0.min.js" type="text/javascript"></script>
+    <script type="text/javascript"></script>
+
+    <head>
+        <script type="text/javascript">
+            $(function() {
+                document.addEventListener("deviceready", function() {
+                    //alert("funciona");
+                    var boton = $("#guardar");
+                    boton.tap(function() {
+                        var marc = $("#marca").val();
+                        var mod = $("#modelo").val();
+                        var col = $("#color").val();
+                        var prec = $("#precio").val();
+                        if (marc != "" && mod != "" && col != "" && prec != "") {
+                            enviar(marc, mod, col, prec);
+                        } else {
+                            alert("Todos los campos son requeridos");
+                        }
+                    });
+
+                    function enviar(marc, mod, col, prec) {
+                        $.ajax({
+                            type: "POST",
+                            url: "http://anggel77.eshost.es/transporte/procesar.php",
+                            data: "Marca=" + marc + "&Modelo=" + mod + "&Color=" + col + "&Precio=" + prec,
+                            success: onSuccess
+                        }).done(function(msg) {
+                            if (msg == 1) {
+
+                            } else {
+                                //navigator.notification.alert("Hubo un error en el registro",null,"Error","Aceptar");
+                            }
+                        });
+                        function onSuccess(data)
+                        {
+
+                            alert(data);
+                        }
+
+                    }
+                    var bot = $("#modificarb");
+                    bot.tap(function() {
+                        var idM = $("#idM").val();
+                        var marcM = $("#marcaM").val();
+                        var modM = $("#modeloM").val();
+                        var colM = $("#colorM").val();
+                        var precM = $("#precioM").val();
+                        if (idM != "" && marcM != "" && modM != "" && colM != "" && precM != "") {
+                            modificar(idM, marcM, modM, colM, precM);
+                        } else {
+                            alert("Todos los campos son requeridos");
+                        }
+                    });
+
+                    function modificar(idM, marcM, modM, colM, precM) {
+                        $.ajax({
+                            type: "POST",
+                            url: "http://anggel77.eshost.es/transporte/modificar.php",
+                            data: "id=" + idM + "&Marca=" + marcM + "&Modelo=" + modM + "&Color=" + colM + "&Precio=" + precM,
+                            success: onSuccess
+                        }).done(function(msg) {
+                            if (msg == 1) {
+
+                            } else {
+                                //navigator.notification.alert("Hubo un error en el registro",null,"Error","Aceptar");
+                            }
+                        });
+                        function onSuccess(data)
+                        {
+
+                            alert(data);
+                        }
+
+                    }
+                    var bo = $("#eliminarb");
+                    bo.tap(function() {
+                        var idE = $("#ide").val();
+
+                        if (idE != "") {
+                            eliminar(idE);
+                        } else {
+                            alert("El campo es requerido");
+                        }
+                    });
+
+                    function eliminar(idE) {
+                        $.ajax({
+                            type: "POST",
+                            url: "http://anggel77.eshost.es/transporte/eliminar.php",
+                            data: "ide=" + idE,
+                            success: onSuccess
+                        }).done(function(msg) {
+                            if (msg == 1) {
+
+                            } else {
+                                //navigator.notification.alert("Hubo un error en el registro",null,"Error","Aceptar");
+                            }
+                        });
+                        function onSuccess(data)
+                        {
+
+                            alert(data);
+                        }
+
+                    }
+                    var btnconsulta = $("#consultar");
+                    btnconsulta.tap(function() {
+                        // alert("yeaaa!!");
+                        $.ajax({
+                            type: "POST",
+                            url: "http://anggel77.eshost.es/transporte/consulta.php",
+                            data: "",
+                            beforeSend: inicioEnvio,
+                            success: consultando
+
+                        });
+                    });
+
+                }, false);
+            });
+            function consultando(data) {
+                var registro = $.parseJSON(data);
+                var mostrar = $("#datos");
+                mostrar.html('');
+                for (var i in registro) {
+
+                    mostrar.append(
+                            registro[i].id_auto + "  " +
+                            registro[i].Marca + "  " +
+                            registro[i].Modelo + "  " +
+                            registro[i].Color + "  " +
+                            registro[i].Precio + "</br>");
+
+
+
+                }
+            }
+            function inicioEnvio()
+            {
+                var x = $("#datos");
+                x.html('Cargando...');
+            }
+
+        </script>
+    </head>
+    <body>
+        <div data-role="page" id="principal">
+            <div data-role="header">
+                <p>REGISTRO DE AUTOS</p>
+            </div> 
+            <div data-role="content" >
+                <a href="#captura" data-role="button">Capturar</a>
+                <a href="#consultas" data-role="button">Consultar</a>
+                <a href="#modificar" data-role="button">Modificar</a>
+                <a href="#eliminar" data-role="button">Eliminar</a>
+            </div>
+            <div data-role="footer" >
+
+            </div> 
+        </div>
+        <div data-role="page" id="captura">
+            <div data-role="header">
+                <p>CAPTURA</p>
+            </div> 
+            <div data-role="content" >
+                <ul data-role="listview">
+                    <li><input type="text" id="marca" placeholder="Marca" /></li>
+                    <li><input type="text" id="modelo"  placeholder="Modelo" /></li>
+                    <li><input type="text" id="color"  placeholder="Color" /></li>       
+                    <li><input type="text" id="precio"  placeholder="Precio" /></li>  
+
+                </ul>
+            </div>
+
+
+            <div data-role="footer" >
+                <a href="#principal" data-role="button">Menu Principal</a>
+                <a href="#" data-role="button" id="guardar">Guardar</a>
+            </div> 
+        </div>
+        <div data-role="page" id="consultas">
+            <div data-role="header">
+                <p>CONSULTAS</p>
+            </div> 
+            <div data-role="content" >
+                <a href="#" id="consultar" data-role="button">Consultar</a>
+                <p>REGISTROS:</p>
+
+                <div id="datos">
+                </div>
+                <div data-role="footer" >
+                    <a href="#principal" data-role="button">Menú Principal</a>
+                </div> 
+            </div>
+        </div>
+
+        <div data-role="page" id="modificar">
+            <div data-role="header">
+                <p>MODIFICAR</p>
+            </div> 
+            <div data-role="content" >
+                <ul data-role="listview">
+                    <li><input type="text" id="idM" placeholder="Id" /></li>
+                    <li><input type="text" id="marcaM" placeholder="Marca" /></li>
+                    <li><input type="text" id="modeloM"  placeholder="Modelo" /></li>
+                    <li><input type="text" id="colorM"  placeholder="Color" /></li>       
+                    <li><input type="text" id="precioM"  placeholder="Precio" /></li> 
+
+                </ul>
+            </div>                        
+            <div data-role="footer" >                
+                <a href="#principal" data-role="button">Menu Principal</a>
+                <a href="#" data-role="button" id="modificarb">Guardar</a>
+            </div> 
+        </div>
+
+        <div data-role="page" id="eliminar">
+            <div data-role="header">
+                <p>ELIMINAR</p>
+            </div> 
+            <div data-role="content" >
+                <ul data-role="listview">
+                    <li><input type="text" id="ide" placeholder="Id del registro a eliminar" /></li>
+                </ul>
+            </div>                
+            <div data-role="footer" >            
+                <a href="#principal" data-role="button">Menu Principal</a>
+                <a href="#" data-role="button" id="eliminarb">Eliminar</a>    
+            </div> 
+        </div>
+    </body>
+
+
+</html>
